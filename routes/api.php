@@ -1,6 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\CountController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,6 +15,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::prefix('users')->group(function () {
+    Route::post('/', [UserController::class, 'create']);
+    // GET is not necessary
+    // PUT is not necessary
+    // DELETE is not necessary
+});
+
+Route::prefix('counts')->group(function () {
+    Route::post('/', [CountController::class, 'create']);
+    // TODO: GET
+    // TODO: PUT
+    // DELETE is not necessary
 });
