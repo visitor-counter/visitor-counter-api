@@ -24,7 +24,7 @@ Route::prefix('users')->group(function () {
 
 Route::prefix('counts')->group(function () {
     Route::post('/', [CountController::class, 'create']);
-    // TODO: GET
-    // TODO: PUT
+    Route::get('/{count_uuid}', [CountController::class, 'getCount']);
+    Route::put('/{count_uuid}', [CountController::class, 'incrementCount']);
     // DELETE is not necessary
 });

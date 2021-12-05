@@ -16,7 +16,7 @@ use Ramsey\Uuid\Uuid;
 class CountController extends Controller
 {
     /**
-     * Create count and return the count's uuid
+     * Create new count and return the created count's uuid
      *
      * @param Request $request
      * @return array|Application|Response|ResponseFactory
@@ -37,7 +37,7 @@ class CountController extends Controller
         }
 
         if (User::where('uuid', $user_uuid)->doesntExist()) {
-            return \response(status: 403);
+            return \response(status: 404);
         }
 
         $count = new Count();
@@ -51,5 +51,37 @@ class CountController extends Controller
         });
 
         return ['uuid' => $uuid];
+    }
+
+    /**
+     * Return specific count's count
+     *
+     * @param string $count_uuid
+     * @return array|Application|Response|ResponseFactory
+     */
+    public function getCount(string $count_uuid): array|Application|Response|ResponseFactory
+    {
+        if (Count::where('uuid', $count_uuid)->doesntExist()) {
+            return \response(status: 404);
+        }
+        return ['count' => Count::where('uuid', $count_uuid)->value('count')];
+    }
+
+    /**
+     * Increment specific count's count
+     *
+     * @param string $count_uuid
+     * @return Application|Response|ResponseFactory
+     */
+    public function incrementCount(string $count_uuid): Application|Response|ResponseFactory
+    {
+        if (Count::where('uuid', $count_uuid)->doesntExist()) {
+            return \response(status: 404);
+        }
+        DB::transaction(function () use ($count_uuid) {
+            $count = Count::where('uuid', $count_uuid)->lockForUpdate()->value('count');
+            Count::where('uuid', $count_uuid)->update(['count' => $count + 1]);
+        });
+        return \response(status: 200);
     }
 }
